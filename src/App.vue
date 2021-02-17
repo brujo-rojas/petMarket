@@ -97,22 +97,22 @@
               >
               <v-list-item-content>
                 <v-list-item-title> ({{ productInCart.amount }})  {{ productInCart.product.name }} </v-list-item-title>
-                <v-list-item-subtitle>total: {{  productInCart.product.price * productInCart.amount }}</v-list-item-subtitle>
+                <v-list-item-subtitle>total: ${{  productInCart.product.price * productInCart.amount | currency }}</v-list-item-subtitle>
               </v-list-item-content>
 
               <v-list-item-action>
                 <div>
-                  <v-btn icon>
+                  <v-btn icon @click="changeAmountCart(productInCart, 1)">
                     <v-icon>
                       mdi-plus
                     </v-icon>
                   </v-btn>
-                  <v-btn icon>
+                  <v-btn icon @click="changeAmountCart(productInCart, -1)">
                     <v-icon>
                       mdi-minus
                     </v-icon>
                   </v-btn>
-                  <v-btn icon>
+                  <v-btn icon @click="deleteProductInCart(productInCart)">
                     <v-icon>
                       mdi-delete
                     </v-icon>
@@ -278,7 +278,25 @@ export default {
     */
     showProduct(product){
       this.$refs.productDetailDialog.show(product);
+    },
+
+    /**
+    * Cambia cantidad de producto en carrito
+     * @param {Object} productInCart - producto en el carrito
+     * @param {Number} num - cambio en cantidad en carrito, puede ser negativo
+    */
+    changeAmountCart(productInCart, num){
+      this.$store.commit('changeAmountCart',{productId : productInCart.product.id, num});
+    },
+
+    /**
+    * Quita producto de carrito
+     * @param {Object} productInCart - producto en el carrito
+    */
+    deleteProductInCart(productInCart){
+      this.$store.commit('deleteProductInCart',productInCart.product.id);
     }
+
   }
 
 };
