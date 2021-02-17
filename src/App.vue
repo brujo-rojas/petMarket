@@ -1,5 +1,9 @@
 <template>
   <v-app>
+
+    <product-detail-dialog ref="productDetailDialog">
+    </product-detail-dialog>
+
     <v-app-bar
       clipped-left
       app
@@ -22,13 +26,35 @@
 
       <v-spacer></v-spacer>
 
-      <v-text-field
-        label="Buscar"
-        solo-inverted
-        dark
+      <v-autocomplete
+        :items="products"
+        color="white"
+        :search-input.sync="searchInputValue"
+        light
+        clearable
         hide-details
-        dense
-        ></v-text-field>
+        hide-selected
+        item-text="name"
+        item-value="name"
+        label="Buscar"
+        solo
+        >
+        <template v-slot:no-data>
+          <v-list-item>
+            <v-list-item-title>
+              Producto no encontrado
+            </v-list-item-title>
+          </v-list-item>
+        </template>
+        <template v-slot:item="{ item }">
+          <v-list-item @click="showProduct(item)">
+          <v-list-item-content>
+            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-subtitle v-text="item.code"></v-list-item-subtitle>
+          </v-list-item-content>
+          </v-list-item>
+        </template>
+      </v-autocomplete>
 
       <v-spacer></v-spacer>
 
@@ -70,8 +96,8 @@
               :key="index"
               >
               <v-list-item-content>
-                <v-list-item-title> ({{ productInCart.count }})  {{ productInCart.product.name }} </v-list-item-title>
-                <v-list-item-subtitle>total: {{  productInCart.product.price * productInCart.count }}</v-list-item-subtitle>
+                <v-list-item-title> ({{ productInCart.amount }})  {{ productInCart.product.name }} </v-list-item-title>
+                <v-list-item-subtitle>total: {{  productInCart.product.price * productInCart.amount }}</v-list-item-subtitle>
               </v-list-item-content>
 
               <v-list-item-action>
@@ -169,12 +195,14 @@
 
 import axios from 'axios';
 import _ from "lodash";
+import productDetailDialog from '@/components/productDetailDialog'
 
 
 export default {
   name: 'App',
 
   components: {
+    'product-detail-dialog' : productDetailDialog,
   },
 
   data(){
@@ -183,6 +211,8 @@ export default {
       drawer           : true,
       categorySelected : null,
       categories       : [],
+      searchInputValue : "",
+      searchResult     : [],
       baseUrl          : this.$store.getters.baseUrl,
     }
   },
@@ -190,13 +220,23 @@ export default {
   computed:{
     productsInCart(){
       return this.$store.getters.productsInCart;
-    }
+    },
+    products(){
+      return this.$store.getters.products;
+    },
   },
 
   created(){
     this.getCategories();
+    this.getAllProducts();
   },
+
   methods:{
+    /**
+     * Obtiene categorias, para usar en sidebar y 
+     * controlar la id de categoria en rutas
+     * @return {Promise} promesa de peticion Get product-category/
+    */
     getCategories(){
       this.loading = true;
       return axios.get(this.baseUrl + "product-category/")
@@ -207,9 +247,37 @@ export default {
           this.loading = false;
         })
     },
+
+    /**
+    * Obtiene productos para barra de busqueda 
+    * 
+    * deberia tener todos los productos, 
+    * usado para busqueda, pero deberia funcionar de manera asincrona 
+    * @return {Promise} promesa de peticion Get product/
+    */
+    getAllProducts(){
+      return axios.get(this.baseUrl + "product/").then(res => {
+        this.$store.commit('setProducts',res.data);
+      })
+    },
+
+
+    /**
+    * Selecciona categoria para redirigir ruta
+    * para mostrar en la pagina principal
+    * @param {Object} category - categoria para mostrar productos
+    */
     selectCategory(category){
       this.categorySelected = category;
       this.$router.push({ name: 'productList', params: { idCategory: category.id  } })
+    },
+
+    /**
+    * Muestra producto en dialog
+     * @param {Object} product - producto para mostrar
+    */
+    showProduct(product){
+      this.$refs.productDetailDialog.show(product);
     }
   }
 

@@ -3,7 +3,6 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-
 let router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
@@ -16,7 +15,5 @@ let router = new Router({
     { path: '/', redirect: '/product-list' }
   ]
 })
-
-
 
 export default router;

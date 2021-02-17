@@ -1,9 +1,7 @@
 <template>
-
   <v-card
     class="mx-4"
-    @click="onClick(product)"
-    >
+    @click="onClick(product)">
     <v-img
       class="white--text align-end"
       height="200px"
@@ -21,26 +19,35 @@
       </div>
     </v-card-text>
 
-    
   </v-card>
 
 </template>
 
 <script>
   export default {
-    name: 'productCard',
-    props:{
+    name  : 'productCard',
+    props : {
       product:{required:true}
     },
     data: () => ({
-      counts:[1, 2, 3, 4, 5],
+      amounts :[1, 2, 3, 4, 5],
     }),
     methods:{
+      /**
+       * Emite evento al escoger un producto mediante Click
+       * @param {Object} - Producto a mostrar en dialog
+       */
       onClick(product){
         this.$emit("showDetail", product);
       },
-      addToCart(product, count){
-        this.$store.commit('addProductInCart',{product, count})
+
+      /**
+       * Agrega producto y cantidad al carrito, en Store
+       * @param {Object} product - Producto a guardar en cart
+       * @param {Object} amount - cantidad del producto indicado  a guardar en cart
+       */
+      addToCart(product, amount){
+        this.$store.commit('addProductInCart',{product, amount})
       }
     }
   }

@@ -6,15 +6,15 @@ Vue.use(Vuetify);
 
 export default new Vuetify({
   icons: {
-    iconfont: 'mdiSvg', // 'mdi' || 'mdiSvg' || 'md' || 'fa' || 'fa4' || 'faSvg'
+    iconfont: 'mdi' // https://materialdesignicons.com/
   },
     theme: {
     themes: {
       light: {
-        primary: colors.green.darken2,
-        secondary: colors.green,
-        accent: colors.pink.darken2,
-        error: colors.red.accent3,
+        primary   : colors.green.darken2,
+        secondary : colors.green,
+        accent    : colors.pink.darken2,
+        error     : colors.red.accent3,
       },
     },
   }

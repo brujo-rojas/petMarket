@@ -1,10 +1,9 @@
 <template>
   <div>
-    <product-detail-dialog
-      ref="productDetailDialog"
-      >
-    </product-detail-dialog>
     <v-container>
+
+      <product-detail-dialog ref="productDetailDialog">
+      </product-detail-dialog>
 
 
       <h1 class="mx-4" v-if="currentCategory">
@@ -57,12 +56,12 @@
 <script>
 
 import axios from 'axios';
-//import _ from "lodash";
 import productCard from '@/components/productCard'
 import productDetailDialog from '@/components/productDetailDialog'
 
 
 export default {
+  name       : "productList",
   components : {
     'product-card'          : productCard,
     'product-detail-dialog' : productDetailDialog,
@@ -75,8 +74,8 @@ export default {
       currentPage     : 1,
       currentCategory : null,
       loadingProducts : false,
-      baseUrl: this.$store.getters.baseUrl,
-      title: "-",
+      baseUrl         : this.$store.getters.baseUrl,
+      title           : "-",
       breadcrumbItems : [
         {
           text     : 'Home',
@@ -97,9 +96,18 @@ export default {
     }
   },
   computed:{
+    /**
+     * variable para paginacion
+     * total de paginas, segun cantidad de productos
+     * @return {Integer} 
+     */
     totalPages() {
       return Math.ceil(this.products.length / this.productsPerPage)
     },
+    /**
+     * Productos paginados, segun productsPerPage (productos por pagina)
+     * @return {Number} productos que corresponden a pagina actual
+     */
     productsPaginated() {
       if (!this.products || this.products.length != this.products.length) {
         return [];
@@ -122,17 +130,29 @@ export default {
 
   methods:{
 
+    /**
+     * Obtiene productos segun la categoria de la ruta actual
+     *
+     * TODO : filtrar productos por categoria, actualmente muestra los productos
+     * que la api devuelve, no hay opcion para obtener por categoria
+     *
+     * @return {Promise} promesa de peticion GET a product/
+     */
     getProducts(){
-      //¿ Id categoria ?
-      let categoryId = parseInt(this.$route.params.idCategory);
+      let categoryId       = parseInt(this.$route.params.idCategory);
       this.currentCategory = this.$store.getters.categoryById(categoryId);
       this.loadingProducts = true;
+      //deberia obtener los productos de una categoria
       return axios.get(this.baseUrl + "product/").then(res => {
         this.products = res.data;
         this.loadingProducts = false;
       })
     },
 
+    /**
+     * Muestra producto en dialog
+     * @param {Object} product - producto para mostrar
+     */
     showProductDetail(product){
       this.$refs.productDetailDialog.show(product);
     },
