@@ -7,6 +7,16 @@
     <v-container>
 
 
+      <h1 class="mx-4" v-if="currentCategory">
+        {{currentCategory.name}}
+      </h1>
+
+      <v-breadcrumbs :items="breadcrumbItems" class="px-2">
+        <template v-slot:divider>
+          <v-icon>mdi-chevron-right</v-icon>
+        </template>
+      </v-breadcrumbs>
+
       <v-layout v-if="loadingProducts" justify-center>
         <v-progress-circular
           indeterminate
@@ -63,8 +73,27 @@ export default {
       page            : 1,
       productsPerPage : 3,
       currentPage     : 1,
+      currentCategory : null,
       loadingProducts : false,
       baseUrl: this.$store.getters.baseUrl,
+      title: "-",
+      breadcrumbItems : [
+        {
+          text     : 'Home',
+          disabled : false,
+          href     : '/',
+        },
+        {
+          text     : 'Products',
+          disabled : false,
+          href     : '/',
+        },
+        {
+          text     : 'Features',
+          disabled : true,
+          href     : '/',
+        },
+      ],
     }
   },
   computed:{
@@ -95,6 +124,8 @@ export default {
 
     getProducts(){
       //¿ Id categoria ?
+      let categoryId = parseInt(this.$route.params.idCategory);
+      this.currentCategory = this.$store.getters.categoryById(categoryId);
       this.loadingProducts = true;
       return axios.get(this.baseUrl + "product/").then(res => {
         this.products = res.data;
