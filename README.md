@@ -1,4 +1,5 @@
 # test-app
+by Patricio M. Rojas R.
 
 ## Project setup
 ```
