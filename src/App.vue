@@ -32,13 +32,14 @@
 
       <v-spacer></v-spacer>
 
-    <v-menu offset-y>
+    <v-menu offset-y :close-on-content-click="false">
       <template v-slot:activator="{ on, attrs }">
         
         <v-badge
           color="error"
           left
           :content="productsInCart.length"
+          :value="productsInCart.length"
           overlap
           >
           <v-btn icon
@@ -53,18 +54,72 @@
         </v-badge>
 
       </template>
-      <v-list>
-        <v-list-item
-          two-line
-          v-for="(productInCart , index) in productsInCart"
-          :key="index"
+
+      <v-card class="elevation-3 pa-3" width="500">
+
+        <v-card-title>
+          <span class="text-h6">Resumen de la compra</span>
+        </v-card-title>
+
+        <v-card-text>
+
+          <v-list v-if="productsInCart.length > 0">
+            <v-list-item
+              two-line
+              v-for="(productInCart , index) in productsInCart"
+              :key="index"
+              >
+              <v-list-item-content>
+                <v-list-item-title> ({{ productInCart.count }})  {{ productInCart.product.name }} </v-list-item-title>
+                <v-list-item-subtitle>total: {{  productInCart.product.price * productInCart.count }}</v-list-item-subtitle>
+              </v-list-item-content>
+
+              <v-list-item-action>
+                <div>
+                  <v-btn icon>
+                    <v-icon>
+                      mdi-plus
+                    </v-icon>
+                  </v-btn>
+                  <v-btn icon>
+                    <v-icon>
+                      mdi-minus
+                    </v-icon>
+                  </v-btn>
+                  <v-btn icon>
+                    <v-icon>
+                      mdi-delete
+                    </v-icon>
+                  </v-btn>
+                </div>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+
+
+
+
+
+          <div v-else="">
+
+            <span class="grey--text italic">no hay productos en el carrito</span>
+          </div>
+
+        </v-card-text>
+
+      <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="primary"
+            text
           >
-          <v-item-content>
-            <v-list-item-title> ({{ productInCart.count }})  {{ productInCart.product.name }} </v-list-item-title>
-            <v-list-item-subtitle>total: {{  productInCart.product.price * productInCart.count }}</v-list-item-subtitle>
-          </v-item-content>
-        </v-list-item>
-      </v-list>
+            Realizar Compra
+          </v-btn>
+        </v-card-actions>
+
+      </v-card>
+
+
     </v-menu>
 
 
@@ -147,6 +202,7 @@ export default {
       return axios.get(this.baseUrl + "product-category/")
         .then(res => {
           this.categories = _.orderBy(res.data, "order");
+          this.$store.commit('setCategories',this.categories);
           this.selectCategory(_.first(this.categories));
           this.loading = false;
         })
